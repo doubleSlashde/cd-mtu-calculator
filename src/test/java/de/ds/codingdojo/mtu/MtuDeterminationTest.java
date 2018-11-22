@@ -27,16 +27,33 @@ public class MtuDeterminationTest {
     final int maxBufferSize = 1042;
     checkBufferSize(maxBufferSize);
   }
+
   @Test
   public void testOtherFindMaxMtuSize() throws IOException {
     final int maxBufferSize = 1045;
     checkBufferSize(maxBufferSize);
   }
 
-  private void checkBufferSize(int maxBufferSize) throws IOException {
+  @Test(expected = IllegalArgumentException.class)
+  public void testEmptyHostShouldThrowIllegalArgumentException() throws IOException {
+    final int maxBufferSize = 1045;
+    checkBufferSize(maxBufferSize, "");
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testNullHostShouldThrowIllegalArgumentException() throws IOException {
+    final int maxBufferSize = 1045;
+    checkBufferSize(maxBufferSize, null);
+  }
+
+  private void checkBufferSize(final int maxBufferSize) throws IOException{
+    checkBufferSize(maxBufferSize, "www.google.de");
+  }
+
+  private void checkBufferSize(final int maxBufferSize, final String host) throws IOException {
     when(pingExecutorMock.isPingFragmented(gt(maxBufferSize), Mockito.anyString())).thenReturn(true);
 
-    int result = testee.findMaxMtuSize();
+    int result = testee.findMaxMtuSize(host);
 
     assertThat(result, is(maxBufferSize));
   }
