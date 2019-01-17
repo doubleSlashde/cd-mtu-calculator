@@ -11,7 +11,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.AdditionalMatchers.gt;
 import static org.mockito.AdditionalMatchers.leq;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MtuDeterminationTest {
@@ -21,6 +23,48 @@ public class MtuDeterminationTest {
 
   @InjectMocks
   private MtuDetermination testee;
+
+  @Test
+  public void testFindMaxMtuSizeNumberOfPingCalls() throws IOException {
+    checkBufferSize(1500);
+
+    verify(pingExecutorMock, times(1)).isPingFragmented(anyInt(), anyString());
+  }
+
+  @Test
+  public void testFindMaxMtuSizeNumberOfPingCalls12_1() throws IOException {
+    checkBufferSize(750);
+
+    verify(pingExecutorMock, times(12)).isPingFragmented(anyInt(), anyString());
+  }
+
+  @Test
+  public void testFindMaxMtuSizeNumberOfPingCalls12_2() throws IOException {
+    checkBufferSize(1125);
+
+    verify(pingExecutorMock, times(12)).isPingFragmented(anyInt(), anyString());
+  }
+
+  @Test
+  public void testFindMaxMtuSizeNumberOfPingCalls12_3() throws IOException {
+    checkBufferSize(1125);
+
+    verify(pingExecutorMock, times(12)).isPingFragmented(anyInt(), anyString());
+  }
+
+  @Test
+  public void testFindMaxMtuSizeNumberOfPingCalls13() throws IOException {
+    checkBufferSize(999);
+
+    verify(pingExecutorMock, times(13)).isPingFragmented(anyInt(), anyString());
+  }
+
+  @Test
+  public void testFindMaxMtuSizeNumberOfPingCalls11() throws IOException {
+    checkBufferSize(1126);
+
+    verify(pingExecutorMock, times(11)).isPingFragmented(anyInt(), anyString());
+  }
 
   @Test
   public void testFindMaxMtuSize() throws IOException {
@@ -57,5 +101,7 @@ public class MtuDeterminationTest {
 
     assertThat(result, is(maxBufferSize));
   }
+
+
 
 }
